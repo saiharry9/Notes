@@ -39,16 +39,8 @@ class HomeFragment : Fragment() {
         super.onActivityCreated(savedInstanceState)
         //viewModel = ViewModelProvider(this).get(HomeViewModel::class.java)
 
-        //viewModel = HomeViewModelFactory.
         //x()
         y()
-//        withContext(Dispatchers.IO) {
-//        Log.i("I", viewModel.getWeather("london").awa.toString())
-//    }
-//
-
-
-        // TODO: Use the ViewModel
     }
 
     private fun x(){
@@ -61,13 +53,10 @@ class HomeFragment : Fragment() {
     private fun y(){
         lifecycleScope.launch{
             val weather = viewModel.weather.await()
-
                 weather.observe(viewLifecycleOwner, Observer { current ->
                     Log.i("Cuurent from db", current.toString())
                 }
                 )
-
-            //Log.i("I", viewModel.getWeather("london").toString())
         }
     }
 
