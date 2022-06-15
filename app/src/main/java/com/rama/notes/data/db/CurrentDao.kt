@@ -13,7 +13,7 @@ import com.rama.notes.data.db.entity.current.Current
 interface CurrentDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun upsert(current: Current)
+    suspend fun upsert(current: Current)
 
     @Query("select * from current where id = $CURRENT_ID")
     fun getCurrent() : LiveData<Current>
