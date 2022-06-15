@@ -1,16 +1,23 @@
 package com.rama.notes.ui
 
+import android.app.Application
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.rama.notes.data.repository.ForecastRepository
 
 
-class HomeViewModelFactory(
-    private val forecastRepository: ForecastRepository
-) : ViewModelProvider.NewInstanceFactory() {
 
-    @Suppress("UNCHECKED_CAST")
+
+
+/**
+ * Factory for constructing DevByteViewModel with parameter
+ */
+class HomeViewModelFactory(val app: Application) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        return HomeViewModel(forecastRepository) as T
+        if (modelClass.isAssignableFrom(HomeViewModel::class.java)) {
+            @Suppress("UNCHECKED_CAST")
+            return HomeViewModel(app) as T
+        }
+        throw IllegalArgumentException("Unable to construct viewmodel")
     }
 }

@@ -6,5 +6,5 @@ import com.rama.notes.data.db.entity.current.CurrentWeatherResponse
 
 interface WeatherNetworkDataSource {
     val fetchedCurrent : LiveData<CurrentWeatherResponse>
-    suspend fun fetchWeather(location:String)
+    suspend fun fetchWeather(location:String) : Current
 }

@@ -13,7 +13,7 @@ task clean(type: Delete) {
 ext{
     kotlinVersion = '1.6.10'
     nav_version='2.4.2'
-    retrofit_version='2.4.0'
+    retrofit_version='2.6.0'
     lifecycle_version='2.4.1'
     roomVersion = '2.4.1'
     coroutinesVersion = '1.1.1'

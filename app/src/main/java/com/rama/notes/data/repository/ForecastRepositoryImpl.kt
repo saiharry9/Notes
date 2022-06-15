@@ -1,25 +1,31 @@
 package com.rama.notes.data.repository
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import com.rama.notes.data.db.CurrentDao
 import com.rama.notes.data.db.entity.current.Current
-import com.rama.notes.data.network.WeatherNetworkDataSource
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
+import com.rama.notes.data.network.WeatherNetworkDataSourceImpl
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 class ForecastRepositoryImpl(
     private val currentDao: CurrentDao,
-    private val dataSource: WeatherNetworkDataSource
+    private val remoteDataSource: WeatherNetworkDataSourceImpl
 ):ForecastRepository {
 
-    init {
-        dataSource.fetchedCurrent.observeForever { current ->
-            GlobalScope.launch { currentDao.upsert(current = current.current) }
+    val current : LiveData<Current> by lazy {
+        currentDao.getCurrent()
+    }
+
+
+
+   override suspend fun refreshWeather() {
+        withContext(Dispatchers.IO) {
+            val weather : Current = remoteDataSource.fetchWeather("London")
+            Log.i("Network",weather.toString())
+            //val weather: Current= WeatherApiService.invoke().getWeather("London").current
+            currentDao.upsert(weather)
         }
     }
 
-    override suspend fun getWeather(): LiveData<Current> {
-        dataSource.fetchWeather("London")
-        return currentDao.getCurrent()
-    }
 }

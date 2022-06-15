@@ -4,6 +4,6 @@ import androidx.lifecycle.LiveData
 import com.rama.notes.data.db.entity.current.Current
 
 interface ForecastRepository {
+    suspend fun refreshWeather()
 
-    suspend fun getWeather(): LiveData< Current>
 }

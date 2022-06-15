@@ -1,5 +1,6 @@
 package com.rama.notes.ui
 
+import android.app.Application
 import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
@@ -11,31 +12,31 @@ import com.rama.notes.data.db.CurrentDao
 import com.rama.notes.data.db.ForecastDatabase
 import com.rama.notes.data.db.entity.current.Current
 import com.rama.notes.data.network.WeatherApiService
+import com.rama.notes.data.network.WeatherApiServiceImpl
 import com.rama.notes.data.network.WeatherNetworkDataSourceImpl
 import com.rama.notes.data.repository.ForecastRepository
 import com.rama.notes.data.repository.ForecastRepositoryImpl
-import com.rama.notes.util.lazyDeferred
 import kotlinx.coroutines.*
 
 class HomeViewModel(
-    private val forecastRepository: ForecastRepository
+    app: Application
 ) : ViewModel() {
 
-    val weatherApiService= WeatherApiService.invoke()
+    val weatherApiService= WeatherApiServiceImpl.invoke()
     val weatherNetworkDataSourceImpl = WeatherNetworkDataSourceImpl(weatherApiService)
 
+    val forecastDatabase:ForecastDatabase = ForecastDatabase.invoke(app)
+    private val forecastRepository = ForecastRepositoryImpl(forecastDatabase.currentDao(),weatherNetworkDataSourceImpl)
 
-    suspend fun getWeatherFromDatabase() : LiveData<Current> {
-        return forecastRepository.getWeather()
+    init {
+        refreshWeather()
     }
 
-    val weather by lazyDeferred {  forecastRepository.getWeather() }
+    val weather = forecastRepository.current
 
-     suspend fun getWeather(location:String) {
-            withContext(Dispatchers.IO) {
-                weatherNetworkDataSourceImpl.fetchWeather(location)
-            }
+    private fun refreshWeather(){
+        viewModelScope.launch {
+            forecastRepository.refreshWeather()
         }
-
-    // TODO: Implement the ViewModel
+    }
 }
